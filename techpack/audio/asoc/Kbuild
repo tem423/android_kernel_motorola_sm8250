@@ -96,15 +96,6 @@ ifeq ($(KERNEL_BUILD), 0)
 		export
 		INCS    +=  -include $(AUDIO_ROOT)/config/sdm450autoconf.h
 	endif
-	ifeq ($(CONFIG_NAIRO_DTB), y)
-		INCS    +=  -include $(AUDIO_ROOT)/config/litonairo_asoc.h
-	endif
-	ifeq ($(CONFIG_SMITH_DTB), y)
-		INCS    +=  -include $(AUDIO_ROOT)/config/litosmith.h
-	endif
-	ifeq ($(CONFIG_RACER_DTB), y)
-		INCS    +=  -include $(AUDIO_ROOT)/config/litoracer.h
-	endif
 endif
 
 # As per target team, build is done as follows:
@@ -157,22 +148,11 @@ endif
 
 # for KONA sound card driver
 ifdef CONFIG_SND_SOC_KONA
-ifeq ($(CONFIG_NIO_DTB), y)
-        MACHINE_OBJS += kona-awinic.o
-else ifeq ($(CONFIG_PSTAR_DTB), y)
-        MACHINE_OBJS += kona-awinic.o
-else
 	MACHINE_OBJS += kona.o
-endif
 endif
 
 ifdef CONFIG_SND_SOC_LITO
-# Separate machine driver for Smith/Racer
-ifeq ($(CONFIG_SMITH_DTB), y)
-	MACHINE_OBJS += lito-smith.o
-else
-	MACHINE_OBJS += lito.o
-endif
+	MACHINE_OBJS += kona.o
 endif
 
 # for BENGAL sound card driver
@@ -283,10 +263,6 @@ endif
 
 ifeq ($(call cc-option-yn, -Wheader-guard),y)
 EXTRA_CFLAGS += -Wheader-guard
-endif
-
-ifeq ($(CONFIG_PSTAR_DTB), y)
-EXTRA_CFLAGS += -DCONFIG_AW882XX_I2C_NO3_BUS
 endif
 
 ifeq ($(KERNEL_BUILD), 0)

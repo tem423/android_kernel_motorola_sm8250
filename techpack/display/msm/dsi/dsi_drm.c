@@ -166,6 +166,9 @@ static void dsi_bridge_pre_enable(struct drm_bridge *bridge)
 	int rc = 0;
 	struct dsi_bridge *c_bridge = to_dsi_bridge(bridge);
 
+    DSI_WARN("Skipping dsi_bridge_pre_enable.");
+	return;
+
 	if (!bridge) {
 		DSI_ERR("Invalid params\n");
 		return;
@@ -226,6 +229,9 @@ static void dsi_bridge_enable(struct drm_bridge *bridge)
 	struct dsi_bridge *c_bridge = to_dsi_bridge(bridge);
 	struct dsi_display *display;
 
+    DSI_WARN("Skipping dsi_bridge_enable.");
+	return;
+
 	if (!bridge) {
 		DSI_ERR("Invalid params\n");
 		return;
@@ -259,6 +265,9 @@ static void dsi_bridge_disable(struct drm_bridge *bridge)
 	struct dsi_display *display;
 	struct dsi_bridge *c_bridge = to_dsi_bridge(bridge);
 
+    DSI_WARN("Skipping dsi_bridge_disable.");
+	return;
+
 	if (!bridge) {
 		DSI_ERR("Invalid params\n");
 		return;
@@ -285,6 +294,9 @@ static void dsi_bridge_post_disable(struct drm_bridge *bridge)
 {
 	int rc = 0;
 	struct dsi_bridge *c_bridge = to_dsi_bridge(bridge);
+
+    DSI_WARN("Skipping dsi_bridge_post_disable.");
+	return;
 
 	if (!bridge) {
 		DSI_ERR("Invalid params\n");
@@ -427,13 +439,7 @@ static bool dsi_bridge_mode_fixup(struct drm_bridge *bridge,
 			(!(dsi_mode.dsi_mode_flags & DSI_MODE_FLAG_DYN_CLK)) &&
 			(!crtc_state->active_changed ||
 			 display->is_cont_splash_enabled)) {
-			/* Reject DMS for First commit for Video Mode Panel */
-			if((dsi_mode.panel_mode == DSI_OP_VIDEO_MODE) &&
-							display->is_cont_splash_enabled)
-				DSI_ERR("DMS not supported for display type:%d for first frame\n",
-							dsi_mode.panel_mode);
-			else
-				dsi_mode.dsi_mode_flags |= DSI_MODE_FLAG_DMS;
+			dsi_mode.dsi_mode_flags |= DSI_MODE_FLAG_DMS;
 
 			SDE_EVT32(SDE_EVTLOG_FUNC_CASE2,
 				dsi_mode.timing.h_active,

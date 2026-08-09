@@ -35,38 +35,6 @@
  */
 #define MIPI_DSI_MSG_ASYNC_OVERRIDE BIT(4)
 
-#define DSI_PANEL_MAX_PANEL_LEN        128
-#define MAX_PARAM_NAME 10
-
-#define BRIGHTNESS_HBM_ON	0xFFFFFFFE
-#define BRIGHTNESS_HBM_OFF	(BRIGHTNESS_HBM_ON - 1)
-#define HBM_BRIGHTNESS(value) ((value) == HBM_OFF_STATE ?\
-			BRIGHTNESS_HBM_OFF : BRIGHTNESS_HBM_ON)
-
-/* HBM implementation is different, depending on display and backlight hardware
- * design, which is classified into the following types:
- * HBM_TYPE_OLED: OLED panel, HBM is controlled by DSI register only, which
- *     is independent on brightness.
- * HBM_TYPE_LCD_DCS_WLED: LCD panel, HBM is controlled by DSI register, and
- *     brightness is decided by WLED IC on I2C/SPI bus.
- * HBM_TYPE_LCD_DCS_ONLY: LCD panel, brightness/HBM is controlled by DSI
- *     register only.
- * HBM_TYPE_LCD_WLED_ONLY: LCD panel, brightness/HBM is controlled by WLED
- *     IC only.
- * HBM_TYPE_LCD_DCS_GPIO: LCD panel, HBM  is controlled by GPIO, and brightness
- *     is controlled by DSI register.
- *
- * Note: brightness must be at maximum while enabling HBM for all LCD panels
- */
-
-enum panel_hbm_type {
-	HBM_TYPE_OLED = 0,
-	HBM_TYPE_LCD_DCS_WLED,
-	HBM_TYPE_LCD_DCS_ONLY,
-	HBM_TYPE_LCD_WLED_ONLY,
-	HBM_TYPE_LCD_DCS_GPIO
-};
-
 enum dsi_panel_rotation {
 	DSI_PANEL_ROTATE_NONE = 0,
 	DSI_PANEL_ROTATE_HV_FLIP,
@@ -78,7 +46,6 @@ enum dsi_backlight_type {
 	DSI_BACKLIGHT_PWM = 0,
 	DSI_BACKLIGHT_WLED,
 	DSI_BACKLIGHT_DCS,
-	DSI_BACKLIGHT_DUMMY,
 	DSI_BACKLIGHT_EXTERNAL,
 	DSI_BACKLIGHT_UNKNOWN,
 	DSI_BACKLIGHT_MAX,
@@ -148,17 +115,14 @@ struct dsi_backlight_config {
 	enum dsi_backlight_type type;
 	enum bl_update_flag bl_update;
 
-	bool bl_2bytes_enable;
 	u32 bl_min_level;
 	u32 bl_max_level;
 	u32 brightness_max_level;
-	u32 brightness_default_level;
 	u32 bl_level;
 	u32 bl_scale;
 	u32 bl_scale_sv;
 	bool bl_inverted_dbv;
 	u32 bl_dcs_subtype;
-	u32 real_bl_level;
 
 	int en_gpio;
 	/* PWM params */
@@ -188,7 +152,6 @@ struct dsi_panel_reset_config {
 
 enum esd_check_status_mode {
 	ESD_MODE_REG_READ,
-	ESD_MODE_TE_CHK_REG_RD,
 	ESD_MODE_SW_BTA,
 	ESD_MODE_PANEL_TE,
 	ESD_MODE_SW_SIM_SUCCESS,
@@ -207,72 +170,6 @@ struct drm_panel_esd_config {
 	u8 *return_buf;
 	u8 *status_buf;
 	u32 groups;
-};
-
-enum panel_idx {
-	MAIN_IDX = 0,
-	SEC_INX,
-	PANEL_IDX_MAX,
-};
-
-enum acl_state {
-	ACL_OFF_STATE = 0,
-	ACL_ON_STATE,
-	ACL_STATE_NUM,
-};
-
-enum hbm_state {
-	HBM_OFF_STATE = 0,
-	HBM_ON_STATE,
-	HBM_FOD_ON_STATE,
-	HBM_STATE_NUM
-};
-
-enum cabc_state {
-	CABC_DIS_STATE,
-	CABC_UI_STATE,
-	CABC_MV_STATE,
-	CABC_STATE_NUM,
-};
-
-enum dc_state {
-	DC_OFF_STATE = 0,
-	DC_ON_STATE,
-	DC_STATE_NUM,
-};
-
-enum color_state {
-	COLOR_VBT_STATE = 0,
-	COLOR_STD_STATE,
-	COLOR_GAME_STATE,
-	COLOR_NONE_STATE,
-	COLOR_STATE_NUM,
-};
-
-struct panel_param_val_map {
-	int state;
-	enum dsi_cmd_set_type type;
-	struct dsi_panel_cmd_set *cmds;
-};
-
-struct panel_param {
-	const char *param_name;
-	struct panel_param_val_map *val_map;
-	u16 val_max;
-	const u16 default_value;
-	u16 value;
-	bool is_supported;
-};
-
-enum touch_state {
-	TOUCH_DEEP_SLEEP_STATE = 0,
-	TOUCH_LOW_POWER_STATE,
-};
-
-#define BRIGHTNESS_ALPHA_PAIR_LEN 2
-struct brightness_alpha_pair {
-	u16 brightness;
-	u8 alpha;
 };
 
 struct dsi_panel {
@@ -328,42 +225,7 @@ struct dsi_panel {
 	int panel_test_gpio;
 	int power_mode;
 	enum dsi_panel_physical_type panel_type;
-
-	bool esd_utag_enable;
-	u64 panel_id;
-	u64 panel_ver;
-	u32 panel_regDA;
-	u32 panel_regDB;
-	char panel_name[DSI_PANEL_MAX_PANEL_LEN];
-	char panel_supplier[DSI_PANEL_MAX_PANEL_LEN];
-
-	u32 disp_on_chk_val;
-	bool no_panel_on_read_support;
-
-	bool panel_hbm_fod;
-	bool panel_hbm_dim_off;
-
-	enum panel_hbm_type hbm_type;
-	u32  bl_lvl_during_hbm;
-
-	struct panel_param *param_cmds;
-
-	enum touch_state tp_state;
-	bool tp_state_check_enable;
-
-	int panel_recovery_retry;
-	bool is_panel_dead;
-
-	struct brightness_alpha_pair *fod_dim_lut;
-	unsigned int fod_dim_lut_len;
-	u8 fod_dim_alpha;
-	bool fod_hbm_enabled;
-	bool fod_ui;
-	bool force_fod_ui;
-	bool force_fod_dim_alpha;
 };
-
-bool dsi_display_all_displays_dead(void);
 
 static inline bool dsi_panel_ulps_feature_enabled(struct dsi_panel *panel)
 {
@@ -394,8 +256,7 @@ struct dsi_panel *dsi_panel_get(struct device *parent,
 				struct device_node *of_node,
 				struct device_node *parser_node,
 				const char *type,
-				int topology_override,
-				u32 panel_idx);
+				int topology_override);
 
 int dsi_panel_trigger_esd_attack(struct dsi_panel *panel);
 
@@ -436,8 +297,6 @@ int dsi_panel_set_nolp(struct dsi_panel *panel);
 
 int dsi_panel_prepare(struct dsi_panel *panel);
 
-int dsi_panel_reset(struct dsi_panel *panel);
-
 int dsi_panel_enable(struct dsi_panel *panel);
 
 int dsi_panel_post_enable(struct dsi_panel *panel);
@@ -450,7 +309,7 @@ int dsi_panel_unprepare(struct dsi_panel *panel);
 
 int dsi_panel_post_unprepare(struct dsi_panel *panel);
 
-int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl);
+int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl, u8 hbm);
 
 int dsi_panel_update_pps(struct dsi_panel *panel);
 
@@ -481,26 +340,9 @@ struct dsi_panel *dsi_panel_ext_bridge_get(struct device *parent,
 
 int dsi_panel_parse_esd_reg_read_configs(struct dsi_panel *panel);
 
-int dsi_panel_parse_panel_cfg(struct dsi_panel *panel, bool is_primary);
-
 void dsi_panel_ext_bridge_put(struct dsi_panel *panel);
 
 void dsi_panel_calc_dsi_transfer_time(struct dsi_host_common_cfg *config,
 		struct dsi_display_mode *mode, u32 frame_threshold_us);
-
-bool dsi_panel_param_is_supported(u32 param_idx);
-
-int dsi_panel_set_param(struct dsi_panel *panel,
-			struct msm_param_info *param_info);
-
-int dsi_panel_get_elvss_data(struct dsi_panel *panel);
-int dsi_panel_get_elvss_data_1(struct dsi_panel *panel);
-int dsi_panel_set_elvss_dim_off(struct dsi_panel *panel, u8 val);
-int dsi_panel_parse_elvss_config(struct dsi_panel *panel, u8 elv_vl);
-
-int dsi_panel_set_fod_hbm(struct dsi_panel *panel, bool status);
-bool dsi_panel_get_fod_ui(struct dsi_panel *panel);
-void dsi_panel_set_fod_ui(struct dsi_panel *panel, bool status);
-bool dsi_panel_get_force_fod_ui(struct dsi_panel *panel);
 
 #endif /* _DSI_PANEL_H_ */

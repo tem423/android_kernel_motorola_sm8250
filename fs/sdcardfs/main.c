@@ -24,9 +24,6 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/parser.h>
-#if defined(CONFIG_SDCARD_FS_DIR_WRITER) || defined(CONFIG_SDCARD_FS_PARTIAL_RELATIME)
-#include <linux/xattr.h>
-#endif
 
 enum sdcardfs_param {
 	Opt_fsuid,
@@ -37,6 +34,8 @@ enum sdcardfs_param {
 	Opt_multiuser,
 	Opt_userid,
 	Opt_reserved_mb,
+	/* add for limit write to data partition */
+	Opt_reserved_uid,
 	Opt_gid_derivation,
 	Opt_default_normal,
 	Opt_nocache,
@@ -56,6 +55,8 @@ static const struct fs_parameter_spec sdcardfs_param_specs[] = {
 	fsparam_bool("default_normal", Opt_default_normal),
 	fsparam_bool("unshared_obb", Opt_unshared_obb),
 	fsparam_u32("reserved_mb", Opt_reserved_mb),
+	/* add for limit write to data partition */
+	fsparam_u32("reserved_uid", Opt_reserved_uid),
 	fsparam_bool("nocache", Opt_nocache),
 	{}
 };
@@ -102,6 +103,10 @@ static int sdcardfs_parse_param(struct fs_context *fc, struct fs_parameter *para
 	case Opt_reserved_mb:
 		opts->reserved_mb = result.uint_32;
 		break;
+	/* add for limit write to data partition */
+	case Opt_reserved_uid:
+		opts->reserved_uid = result.uint_32;
+		break;
 	case Opt_gid_derivation:
 		opts->gid_derivation = true;
 		break;
@@ -135,6 +140,8 @@ static void copy_sb_opts(struct sdcardfs_mount_options *opts,
 	opts->multiuser = fcopts->opts.multiuser;
 	opts->nocache = fcopts->opts.nocache;
 	opts->reserved_mb = fcopts->opts.reserved_mb;
+	/* add for limit write to data partition */
+	opts->reserved_uid = fcopts->opts.reserved_uid;
 	opts->unshared_obb = fcopts->opts.unshared_obb;
 }
 
@@ -299,26 +306,6 @@ static int __sdcardfs_fill_super(
 	if (!(fc->sb_flags & SB_SILENT))
 		pr_info("sdcardfs: mounted on top of %s type %s\n",
 				dev_name, lower_sb->s_type->name);
-
-#ifdef CONFIG_SDCARD_FS_DIR_WRITER
-	if (vfs_setxattr(lower_path.dentry,
-		SDCARDFS_XATTR_DWRITER_NAME,
-		CONFIG_SDCARD_FS_DIR_WRITER,
-		strlen(CONFIG_SDCARD_FS_DIR_WRITER), 0)) {
-		pr_warn("sdcardfs: failed to set %s\n",
-			SDCARDFS_XATTR_DWRITER_NAME);
-	}
-#endif
-#ifdef CONFIG_SDCARD_FS_PARTIAL_RELATIME
-	if (vfs_setxattr(lower_path.dentry,
-		SDCARDFS_XATTR_PARTIAL_RELATIME_NAME,
-		CONFIG_SDCARD_FS_PARTIAL_RELATIME,
-		strlen(CONFIG_SDCARD_FS_PARTIAL_RELATIME), 0)) {
-		pr_warn("sdcardfs: failed to set xattr %s\n",
-			SDCARDFS_XATTR_PARTIAL_RELATIME_NAME);
-	}
-#endif
-
 	goto out; /* all is well */
 
 	/* no longer needed: free_dentry_private_data(sb->s_root); */

@@ -1,10 +1,6 @@
 # Android makefile for audio kernel modules
 MY_LOCAL_PATH := $(call my-dir)
 
-ifeq ($(AUDIO_FEATURE_ENABLED_CIRRUS_PLAYBACK),true)
-	KERNEL_CFLAGS += CONFIG_CIRRUS_PLAYBACK=y
-endif
-
 UAPI_OUT := $(PRODUCT_OUT)/obj/vendor/qcom/opensource/audio-kernel/include
 
 ifeq ($(call is-board-platform-in-list,msmnile $(MSMSTEPPE) $(TRINKET) kona lito bengal sdmshrike sdm660 msm8953 msm8937),true)
@@ -27,19 +23,6 @@ include $(MY_LOCAL_PATH)/dsp/codecs/Android.mk
 include $(MY_LOCAL_PATH)/soc/Android.mk
 include $(MY_LOCAL_PATH)/asoc/Android.mk
 include $(MY_LOCAL_PATH)/asoc/codecs/Android.mk
-
-ifneq (,$(filter nio%, $(TARGET_PRODUCT)))
-include $(MY_LOCAL_PATH)/asoc/codecs/aw882xx/Android.mk
-endif
-
-ifneq (,$(filter pstar%, $(TARGET_PRODUCT)))
-include $(MY_LOCAL_PATH)/asoc/codecs/aw882xx/Android.mk
-endif
-
-ifneq (,$(filter nairo% kiev%, $(TARGET_PRODUCT)))
-include $(MY_LOCAL_PATH)/asoc/codecs/aw882xx/Android.mk
-endif
-
 endif
 
 ifeq ($(call is-board-platform-in-list,msmnile $(MSMSTEPPE) $(TRINKET) sdmshrike),true)

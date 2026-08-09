@@ -272,7 +272,6 @@ struct sde_crtc_misr_info {
  * @misr_frame_count  : misr frame count provided by client
  * @misr_data     : store misr data before turning off the clocks.
  * @idle_notify_work: delayed worker to notify idle timeout to user space
- * @early_wakeup_work: work to trigger early wakeup
  * @power_event   : registered power event handle
  * @cur_perf      : current performance committed to clock/bandwidth driver
  * @plane_mask_old: keeps track of the planes used in the previous commit
@@ -341,7 +340,6 @@ struct sde_crtc {
 	struct sde_crtc_frame_event frame_events[SDE_CRTC_FRAME_EVENT_SIZE];
 	struct list_head frame_event_list;
 	spinlock_t spin_lock;
-	unsigned long revalidate_mask;
 
 	/* for handling internal event thread */
 	struct sde_crtc_event event_cache[SDE_CRTC_MAX_EVENT_COUNT];
@@ -351,7 +349,6 @@ struct sde_crtc {
 	bool misr_enable_debugfs;
 	u32 misr_frame_count;
 	struct kthread_delayed_work idle_notify_work;
-	struct kthread_work early_wakeup_work;
 
 	struct sde_power_event *power_event;
 
@@ -380,12 +377,6 @@ struct sde_crtc {
 	int comp_ratio;
 
 	struct drm_property_blob *dspp_blob_info;
-};
-
-enum sde_crtc_dirty_flags {
-	SDE_CRTC_DIRTY_DEST_SCALER,
-	SDE_CRTC_DIRTY_DIM_LAYERS,
-	SDE_CRTC_DIRTY_MAX,
 };
 
 #define to_sde_crtc(x) container_of(x, struct sde_crtc, base)
@@ -437,11 +428,9 @@ struct sde_crtc_state {
 
 	struct msm_property_state property_state;
 	struct msm_property_value property_values[CRTC_PROP_COUNT];
-	DECLARE_BITMAP(dirty, SDE_CRTC_DIRTY_MAX);
 	uint64_t input_fence_timeout_ns;
 	uint32_t num_dim_layers;
 	struct sde_hw_dim_layer dim_layer[SDE_MAX_DIM_LAYERS];
-	struct sde_hw_dim_layer *fod_dim_layer;
 	uint32_t num_ds;
 	uint32_t num_ds_enabled;
 	bool ds_dirty;
