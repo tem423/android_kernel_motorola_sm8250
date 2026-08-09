@@ -1210,6 +1210,9 @@ msm_get_feature_code(struct device *dev,
 
 	return scnprintf(buf, PAGE_SIZE, "%s\n",
 		feature_code ? feature_code : "Unknown");
+}
+
+static ssize_t
 msm_get_feature_id(struct device *dev,
 			struct device_attribute *attr,
 			char *buf)
