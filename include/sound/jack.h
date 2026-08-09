@@ -69,6 +69,9 @@ enum snd_jack_types {
 	SND_JACK_BTN_3		= 0x1000,
 	SND_JACK_BTN_4		= 0x0800,
 	SND_JACK_BTN_5		= 0x0400,
+
+	SND_JACK_MICROPHONE2	= 0x200000, /* mic jack, stereo */
+	SND_JACK_ANC_HEADPHONE	= 0x400000, /* headphone jack, active noise cancelling */
 };
 
 /* Keep in sync with definitions above */
