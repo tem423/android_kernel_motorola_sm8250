@@ -1,2 +1,18 @@
-*.c   diff=cpp
-*.h   diff=cpp
+* text=auto eol=lf
+
+# Keep diffs readable for C
+*.c diff=cpp
+*.h diff=cpp
+
+# Explicitly binary (never convert)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.gz binary
+*.zip binary
+*.img binary
+*.dtb binary
+*.ko binary
+*.bin binary
+*.elf binary
