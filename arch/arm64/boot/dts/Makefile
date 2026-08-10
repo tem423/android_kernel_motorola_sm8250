@@ -33,7 +33,9 @@ subdir-y += zte
 
 
 else
-        subdir-y += vendor
+        # vendor DTBs disabled: dtc/DTB stage keeps failing (segfault / duplicate labels),
+        # skip arch/arm64/boot/dts/vendor entirely until DTS sources are clean.
+        # subdir-y += vendor
 endif
 
 dtb-$(CONFIG_OF_ALL_DTBS) := $(patsubst $(dtstree)/%.dts,%.dtb, $(foreach d,$(subdir), $(wildcard $(dtstree)/$(d)/*.dts)))
