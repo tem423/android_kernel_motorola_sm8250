@@ -156,8 +156,8 @@ static void kpd_bark_work_func(struct work_struct *work)
 		kernel_restart("hw_warmreset");
 	} else {
 		dev_err(&pon->pdev->dev, "HW User Reset! 2 sec to Reset!\n");
-		qpnp_pon_store_extra_reset_info(RESET_EXTRA_RESET_KUNPOW_REASON,
-			mmi_kungpow_check() ? 0 : RESET_EXTRA_RESET_KUNPOW_REASON);
+		// qpnp_pon_store_extra_reset_info(RESET_EXTRA_RESET_KUNPOW_REASON,
+		//	mmi_kungpow_check() ? 0 : RESET_EXTRA_RESET_KUNPOW_REASON);
 		qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 		kernel_halt();
 	}

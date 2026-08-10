@@ -521,8 +521,8 @@ static void msm_restart_prepare(const char *cmd)
 				PON_RESTART_REASON_BOOTLOADER);
 			__raw_writel(0x77665500, restart_reason);
 			/* set reboot_bl flag in PMIC for cold reset */
-			qpnp_pon_store_extra_reset_info(RESET_EXTRA_REBOOT_BL_REASON,
-				RESET_EXTRA_REBOOT_BL_REASON);
+			// qpnp_pon_store_extra_reset_info(RESET_EXTRA_REBOOT_BL_REASON,
+			//	RESET_EXTRA_REBOOT_BL_REASON);
 			/*
 			 * force cold reboot here to avoid unexpected
 			 * warm boot from bootloader.
@@ -560,20 +560,20 @@ static void msm_restart_prepare(const char *cmd)
 			enable_emergency_dload_mode();
 		} else if (!strncmp(cmd, "post-wdt", 8)) {
 			/* set  flag in PMIC to nofity BL post watchdog reboot */
-			qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
-				RESET_EXTRA_POST_WDT_REASON);
+			// qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
+			//	RESET_EXTRA_POST_WDT_REASON);
 			 /* force cold reboot */
 			qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 		} else if (!strncmp(cmd, "post-pmicwdt", 12)) {
 			/* set  flag in PMIC to nofity BL post pmic watchdog reboot */
-			qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
-				RESET_EXTRA_POST_PMICWDT_REASON);
+			// qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
+			//	RESET_EXTRA_POST_PMICWDT_REASON);
 			 /* force cold reboot */
 			qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 		} else if (!strncmp(cmd, "post-panic", 10)) {
 			/* set  flag in PMIC to nofity BL post panic reboot */
-			qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
-				RESET_EXTRA_POST_PANIC_REASON);
+			// qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
+			//	RESET_EXTRA_POST_PANIC_REASON);
 			 /* force cold reboot */
 			qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 		} else if (!strncmp(cmd, "hw_warmreset", 13)) {
@@ -583,8 +583,8 @@ static void msm_restart_prepare(const char *cmd)
 			pr_info("set system hw warmreset mode\n");
 		} else if (!strncmp(cmd, "post-hw_warmreset", 17)) {
 			/* set  flag in PMIC to nofity BL post hw_warmreset reboot */
-			qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
-				RESET_EXTRA_POST_HWWARM_RESET_REASON);
+			// qpnp_pon_store_extra_reset_info(RESET_EXTRA_POST_REBOOT_MASK,
+			//	RESET_EXTRA_POST_HWWARM_RESET_REASON);
 			 /* force cold reboot */
 			qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 		} else {
@@ -592,8 +592,8 @@ static void msm_restart_prepare(const char *cmd)
 		}
 	} else if (in_panic == 1) {
 		__raw_writel(0x77665505, restart_reason);
-		qpnp_pon_store_extra_reset_info(RESET_EXTRA_PANIC_REASON,
-			RESET_EXTRA_PANIC_REASON);
+		// qpnp_pon_store_extra_reset_info(RESET_EXTRA_PANIC_REASON,
+		//	RESET_EXTRA_PANIC_REASON);
 	} else {
 		__raw_writel(0x77665501, restart_reason);
 	}
