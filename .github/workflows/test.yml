@@ -1,4 +1,4 @@
-name: 编译内核
+name: Build Kernel
 
 on:
   workflow_dispatch:
@@ -31,4 +31,5 @@ jobs:
           anykernel3: true
           bootimg-url: https://github.com/tem423/android_kernel_lenovo_tb371fc/releases/download/originalboot/boot.img
           release: false
+          extra-cmd: DTC_EXT=/usr/bin/dtc
           access-token: ${{ secrets.GITHUB_TOKEN }}
